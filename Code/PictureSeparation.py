@@ -32,10 +32,10 @@ while True:
      # Display the resulting frame
 
      #cv2.imshow('Camera1', cam1)
-     cv2.imshow('Camera2', cam2)
-     cv2.imshow('Camera3', cam3)
+     #cv2.imshow('Camera2', cam2)
+     #cv2.imshow('Camera3', cam3)
      #cv2.imshow('Camera4', cam4)
-     cv2.imshow("Stiched image",disparity)
+     cv2.imshow("Stiched image",frame)
      while True:
          if cv2.waitKey(10):
              break
