@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import json
 import functions
 
 # termination criteria
@@ -40,7 +41,7 @@ while True:
          break
      # # Our operations on the frame come here
      # Find the chess board corner
-     if i > 600 and i < 1000:
+     if i > 750 and i < 1000:
         ret, corners = cv2.findChessboardCorners(gray, (6,6), None)
      # If found, add object points, image points (after refining them)
         if ret == True:
@@ -49,9 +50,9 @@ while True:
            objpoints.append(objp)
            corners2 = cv2.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
            imgpoints.append(corners2)
-           cv2.drawChessboardCorners(cam2, (6,6), corners2, ret)
+           cv2.drawChessboardCorners(gray, (6,6), corners2, ret)
         
-        cv2.imshow('img', cam2)
+        cv2.imshow('img', gray)
      elif i >1000:
         break
     # Draw and display the corners
@@ -70,39 +71,16 @@ cv2.destroyAllWindows()
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 
-undistortVideo = cv2.VideoCapture('/Users/elinelillebokarlsen/ComputerVisionLabTrento/Videos/out9.mp4')
-if not undistortVideo.isOpened():
-    print("Cannot open camera")
-    exit()
+# Save the calibration results to a file
+calibration_data = {
+    'camera_matrix': mtx.tolist(),
+    'distortion_coefficients': dist.tolist(),
+    'rotation_vectors': [np.array(vec).tolist() for vec in rvecs],
+    'translation_vectors': [np.array(vec).tolist() for vec in tvecs]
+}
 
-while True:
-# Capture frame-by-frame
-     ret, frame = undistortVideo.read()
-     unVid = frame[:,897:2049]
-     h, w = unVid.shape[:2]
-     newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
-     
-     #cv2.rectangle(frame, (0, 0), (896, 1792), (0, 255, 0), 1)
+with open('/Users/elinelillebokarlsen/ComputerVisionLabTrento/Output/calibration_data.json', 'w') as f:
+    json.dump(calibration_data, f, indent=4)
 
-     #cv2.rectangle(frame, (896, 0), (2048, 1792), (0, 0, 255), 1)
-     # if frame is read correctly ret is True
-     if not ret:
-         print("Can't receive frame (stream end?). Exiting ...")
-         break
-     # # Our operations on the frame come here
-     # undistort
-     dst = cv2.undistort(unVid, mtx, dist, None, newcameramtx)
-     # Display the resulting frame
-    # Draw and display the corners
 
-     cv2.imshow('Undistorted image', dst)
-     cv2.imshow("original", unVid)
-     #cv2.imshow('Camera2', cam2)
-     while True:
-         if cv2.waitKey(10):
-             break
-     if cv2.waitKey(1) == ord('q'):
-         break
-     
-undistortVideo.release()
-cv2.destroyAllWindows()
+print("Calibration data saved to calibration_data.json")
