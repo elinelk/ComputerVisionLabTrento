@@ -130,8 +130,8 @@ for t in range(MAX_FRAMES):
         # Display the resulting frames
         #cv2.imshow('Frame', frame)
         #cv2.imshow('Motion mask', motion_mask)
-        cv2.imshow('Corners1', dst1)
-        cv2.imshow('Corners2', dst2)
+        cv2.imshow('Corners1', cam2)
+        cv2.imshow('Corners2', cam3)
         cv2.imshow('warped', panorama)
         # Wait and exit if q is pressed
         if cv2.waitKey(1) == ord('q') or not ret:
