@@ -83,7 +83,7 @@ def createMask(image1,image2,image):
 def stitchingImages(image1,image2):
     #Creating the final image with all pixel values set to zero
     heightStitched, widthStitched = createWindow(image1, image2)
-    emptyImage = np.zeros((heightStitched, widthStitched, 3)) #3 represents rgb
+    leftImagePixels = np.zeros((heightStitched, widthStitched, 3)) #3 represents rgb
 
     #Dimensions for the image to the left
     leftHeight = image1.shape[0]
@@ -99,9 +99,9 @@ def stitchingImages(image1,image2):
 
     #Calculating the pixel values for the left part of the final result
     leftMask = createMask(image1,image2,image='leftImage')
-    emptyImage[0:leftHeight, 0:leftWidth, :] = image1
-    emptyImage *= leftMask #Multiplying each pixel in the left part with the pixel values of the left mask.Pixels inside blending area will blend gradually
-    leftPart = emptyImage
+    leftImagePixels[0:leftHeight, 0:leftWidth, :] = image1
+    leftImagePixels *= leftMask #Multiplying each pixel in the left part with the pixel values of the left mask.Pixels inside blending area will blend gradually
+    leftPart = leftImagePixels
 
     #Combining the left and right part into the final stitched image
     finalResult=leftPart + rightPart
