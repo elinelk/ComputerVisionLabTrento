@@ -97,7 +97,7 @@ calibration_data = {
     'translation_vectors': [np.array(vec).tolist() for vec in tvecs]
 }
 
-with open('/Users/elinelillebokarlsen/ComputerVisionLabTrento/Output/calibration_data.json', 'w') as f:
+with open('/Users/elinelillebokarlsen/ComputerVisionLabTrento/Output/CameraMatrix.json', 'w') as f:
     json.dump(calibration_data, f, indent=4)
 
 
