@@ -70,10 +70,9 @@ def createMask(image1,image2,image):
     heightStitched, widthStitched = createWindow(image1, image2)
     mask = np.zeros((heightStitched, widthStitched))
 
-
     #Setting the area to the left of the left barrier, and to the right of the right barrier to the original pixel value
     if image == 'leftImage':
-        mask[:, barrier- blendingRegionSize:barrier+ blendingRegionSize] = np.tile(np.linspace(1, 0, 2 * blendingRegionSize ).T, (heightStitched, 1)) #Defining pixel value of the blending area
+        mask[:, barrier-blendingRegionSize:barrier+ blendingRegionSize] = np.tile(np.linspace(1, 0, 2 * blendingRegionSize ).T, (heightStitched, 1)) #Defining pixel value of the blending area
         mask[:, :barrier-blendingRegionSize] = 1 #Setting all pixels to the left of the barrier to 1
     else:
         mask[:, barrier- blendingRegionSize:barrier +  blendingRegionSize] = np.tile(np.linspace(0, 1, 2 *  blendingRegionSize ).T, (heightStitched, 1))
@@ -112,7 +111,7 @@ def stitchingImages(image1,image2):
 
 #Saving the final result as a image
 stitchedImage = stitchingImages(image1,image2)
-cv2.imwrite('result.jpg', stitchedImage)
+cv2.imwrite('StitchingResult.jpg', stitchedImage)
 
 
 
