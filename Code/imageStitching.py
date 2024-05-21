@@ -1,13 +1,11 @@
 import cv2
 import numpy as np
 
-#Bruker blending window 40
+
+#Using blending window 40
 image1 = cv2.imread('/Users/marihetlesaeter/Desktop/stitch_1.jpg')
 image2 = cv2.imread('/Users/marihetlesaeter/Desktop/stitch_2.jpg')
 
-#Bruker blending window 30
-#image1 = cv2.imread('/Users/marihetlesaeter/computervision/bilde1.jpg')
-#image2 = cv2.imread('/Users/marihetlesaeter/computervision/bilde2.jpg')
 
 def showMatches(matchesImage):
     cv2.imshow('Top Matches', matchesImage)
@@ -61,7 +59,7 @@ def getHomography(image1,image2):
 
 
 
-def createMask(image1,image2,version):
+def createMask(image1,image2,image):
     #Size of blending region
     blendingRegionSize= int(40)
 
@@ -74,7 +72,7 @@ def createMask(image1,image2,version):
 
 
     #Setting the area to the left of the left barrier, and to the right of the right barrier to the original pixel value
-    if version == 'left_image':
+    if image == 'leftImage':
         mask[:, barrier- blendingRegionSize:barrier+ blendingRegionSize] = np.tile(np.linspace(1, 0, 2 * blendingRegionSize ).T, (heightStitched, 1)) #Defining pixel value of the blending area
         mask[:, :barrier-blendingRegionSize] = 1 #Setting all pixels to the left of the barrier to 1
     else:
@@ -98,11 +96,11 @@ def stitchingImages(image1,image2):
     perspectiveTransformation = cv2.warpPerspective(image2, H, (widthStitched, heightStitched))
 
     #Calculating the pixel values for the right part of the final result
-    rightMask = createMask(image1,image2,version='right_image')
+    rightMask = createMask(image1,image2,image='rightImage')
     rightPart = perspectiveTransformation*rightMask
 
     #Calculating the pixel values for the left part of the final result
-    leftMask = createMask(image1,image2,version='left_image')
+    leftMask = createMask(image1,image2,image='leftImage')
     emptyImage[0:leftHeight, 0:leftWidth, :] = image1
     emptyImage *= leftMask #Multiplying each pixel in the left part with the pixel values of the left mask.Pixels inside blending area will blend gradually
     leftPart = emptyImage
@@ -114,7 +112,7 @@ def stitchingImages(image1,image2):
 
 #Saving the final result as a image
 stitchedImage = stitchingImages(image1,image2)
-cv2.imwrite('panorama475.jpg', stitchedImage)
+cv2.imwrite('result.jpg', stitchedImage)
 
 
 
