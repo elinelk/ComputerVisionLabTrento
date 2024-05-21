@@ -38,7 +38,7 @@ while True:
      # Display the resulting frame
      # Crop the image
      x, y, w, h = roi
-     undistorted_img = undistorted_img[y:y+h, x:x+w]
+     #undistorted_img = undistorted_img[y:y+h, x:x+w]
     # Draw and display the corners
 
      cv2.imshow('Undistorted image', undistorted_img)

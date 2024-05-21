@@ -3,6 +3,12 @@ import cv2
 import json
 import functions
 
+def average_corner_distance(corners1, corners2):
+    # Calculate the Euclidean distance between corresponding corners
+    # and take the average
+    distances = np.linalg.norm(corners1 - corners2, axis=1)
+    return np.mean(distances)
+
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
  
@@ -13,6 +19,7 @@ chessboard_size = (9, 6)  # Number of inner corners per a chessboard row and col
 # Prepare object points like (0,0,0), (1,0,0), (2,0,0) ..., (8,5,0)
 objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
 objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
+threshold = 35  # Define the threshold distance
 
 
 # Arrays to store object points and image points from all the images.
@@ -47,10 +54,20 @@ while True:
         ret, corners = cv2.findChessboardCorners(gray, chessboard_size, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE + cv2.CALIB_CB_FAST_CHECK)
      # If found, add object points, image points (after refining them)
         if ret == True:
-           j+=1
-           print(f"{j}: True")
-           objpoints.append(objp)
-           imgpoints.append(corners)
+           corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+           if objpoints:  # Check only if there are already corners in the list
+            mean_corners = np.mean(objpoints, axis=0)
+            distance = average_corner_distance(corners2, mean_corners)
+            if distance > threshold:
+                objpoints.append(corners)
+                imgpoints.append(frame)
+                print(f"{j}: True")
+                j+=1
+           else:
+            objpoints.append(corners)
+            imgpoints.append(frame)
+            print(f"{j}: True")
+            j+=1
             # Draw and display the corners
            cv2.drawChessboardCorners(cam2, chessboard_size, corners, ret)
            cv2.imshow('img', cam2)
@@ -69,7 +86,6 @@ while True:
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
-
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 
@@ -81,7 +97,7 @@ calibration_data = {
     'translation_vectors': [np.array(vec).tolist() for vec in tvecs]
 }
 
-with open('/Users/elinelillebokarlsen/ComputerVisionLabTrento/Output/calibration_data.json', 'w') as f:
+with open('/Users/elinelillebokarlsen/ComputerVisionLabTrento/Output/CameraMatrix.json', 'w') as f:
     json.dump(calibration_data, f, indent=4)
 
 
