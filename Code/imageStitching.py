@@ -44,7 +44,6 @@ def getHomography(image1,image2):
             goodMatches.append([m1])
             goodPoints.append((m1.trainIdx, m1.queryIdx))
 
-
     #Drawing the top matches
     #matchesImage = cv2.drawMatchesKnn(image1, keypoints1, image2, keypoints2, goodMatches, None, flags=2)
     #showMatches(matchesImage)
